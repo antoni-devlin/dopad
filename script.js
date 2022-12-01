@@ -45,14 +45,6 @@ window.addEventListener("load", (e) => {
 	}
 });
 
-
-// Task object
-function Task(id, content) {
-	this.id = id;
-	this.content = content;
-	this.completed = false;
-}
-
 // Render task list on frontend
 function render(tasksArray) {
 	document.querySelectorAll('.task').forEach(task => {
