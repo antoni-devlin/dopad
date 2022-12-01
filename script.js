@@ -139,7 +139,6 @@ newTaskField.addEventListener("keydown", (event) => {
 			}
 			tasks = JSON.parse(localStorage.getItem('tasks'))
 			// Create new task object to be stored
-			// let newTask = new Task(generateUUID(), newTaskField.innerHTML)
 			const newTask = {
 				id: generateUUID(),
 				content: newTaskField.innerHTML,
