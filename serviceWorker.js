@@ -1,4 +1,4 @@
-const staticDopad = "dopad-site-v1";
+const staticDopad = "dopad-site-v1.1";
 const assets = [
   "/",
   "/index.html",
