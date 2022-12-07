@@ -33,16 +33,62 @@ let taskElements = document.querySelectorAll(".task");
 // If tasks exist, render the task list. If no tasks exist, initialise empty array in localStorage
 window.addEventListener("load", (e) => {
   log("Initial load");
-  if (localStorage.length > 0) {
+  if (localStorage.getItem("tasks")) {
     // If tasks exist, render them in the <ul>
-    tasks = JSON.parse(localStorage.getItem("tasks"));
+    const tasks = JSON.parse(localStorage.getItem("tasks"));
     render(tasks);
   } else {
     // If tasks array is empty, recreate the tasks array (catches a missing array as well)
     localStorage.setItem("tasks", JSON.stringify([]));
-    render(tasks);
+    render([]);
   }
 });
+
+function createTaskListElement(id) {
+  // Create new top-level list item to contain task
+  let newListItem = document.createElement("li");
+  newListItem.classList.add("task");
+  newListItem.setAttribute("id", id);
+  return newListItem;
+}
+
+function createCheckboxElement(completed) {
+  // Create checkbox span within list item
+  let newSpan = document.createElement("span");
+  newSpan.setAttribute("role", "checkbox");
+  newSpan.setAttribute("tabindex", "0");
+  newSpan.classList.add("checkbox");
+
+  // Create checked or uncheckbox, depending on whether the task is marked as completed in localstorage
+  if (completed) {
+    newSpan.setAttribute("aria-checked", "true");
+    newSpan.textContent = "[x]";
+    taskContentSpan.classList.add("checked");
+  } else {
+    newSpan.setAttribute("aria-checked", "false");
+    newSpan.textContent = "[ ]";
+  }
+
+  return newSpan;
+}
+
+function createContentElement(content) {
+  // Create span to contain task content within list item
+  let taskContentSpan = document.createElement("span");
+  taskContentSpan.classList.add("task-content");
+  taskContentSpan.setAttribute("tabindex", "0");
+  taskContentSpan.textContent = content;
+  return taskContentSpan;
+}
+
+function createDeleteButton() {
+  // Create delete button within list item
+  let deleteButton = document.createElement("p");
+  deleteButton.classList.add("delete-task", "hidden");
+  deleteButton.textContent = "Delete";
+  deleteButton.setAttribute("tabindex", "0");
+  return deleteButton;
+}
 
 // Render task list on frontend
 function render(tasksArray) {
@@ -51,45 +97,16 @@ function render(tasksArray) {
   });
   log("Re-rendering frontend");
 
-  tasksArray.forEach((task) => {
-    // Create new top-level list item to contain task
-    let newListItem = document.createElement("li");
-    newListItem.classList.add("task");
+  tasksArray.forEach(function createAndInsertDomForTask(task) {
+    const newListItem = createTaskListElement(task.id);
+    newListItem.append(createCheckboxElement(task.completed));
+    newListItem.append(createContentElement(task.content));
+    newListItem.append(createDeleteButton());
 
-    // Create checkbox span within list item
-    let newSpan = newListItem.appendChild(document.createElement("span"));
-    newSpan.setAttribute("role", "checkbox");
-    newSpan.setAttribute("tabindex", "0");
-    newSpan.classList.add("checkbox");
-    // newSpan.insertAdjacentText('afterend', task.content)
-
-    // Create span to contain task content within list item
-    let taskContentSpan = newListItem.appendChild(
-      document.createElement("span")
-    );
-    taskContentSpan.classList.add("task-content");
-    taskContentSpan.setAttribute("tabindex", "0");
-    taskContentSpan.textContent = task.content;
-
-    // Create delete button within list item
-    let deleteButton = newListItem.appendChild(document.createElement("p"));
-    deleteButton.classList.add("delete-task", "hidden");
-    deleteButton.textContent = "Delete";
-    deleteButton.setAttribute("tabindex", "0");
-
-    // Create checked or uncheckbox, depending on whether the task is marked as completed in localstorage
-    if (task.completed) {
-      newSpan.setAttribute("aria-checked", "true");
-      newSpan.textContent = "[x]";
-      taskContentSpan.classList.add("checked");
-    } else {
-      newSpan.setAttribute("aria-checked", "false");
-      newSpan.textContent = "[ ]";
-    }
-    newListItem.setAttribute("id", task.id);
     newTaskField.before(newListItem);
   });
 }
+
 
 // Clear all tasks when the 'Delete all' button is pushed
 document
